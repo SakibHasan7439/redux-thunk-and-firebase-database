@@ -1,4 +1,9 @@
-import { ADD_DATA_ITEM, DATA_FETCH_ERROR, DATA_FETCH_START, DATA_FETCH_SUCCESS } from "../actionTypes/actionTypes";
+import { 
+    ADD_DATA_ITEM, 
+    DATA_FETCH_ERROR, 
+    DATA_FETCH_START, 
+    DATA_FETCH_SUCCESS 
+} from "../actionTypes/actionTypes";
 
 const initial_state = {
     loading: false,

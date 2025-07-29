@@ -6,8 +6,12 @@ import {
   Form,
   Input,
   InputNumber,
+  message,
   Select
 } from 'antd';
+import { add_data_item, data_fetch_error } from "./redux/action/action";
+import { push, ref } from "firebase/database";
+import database from "./firebase/firebase.init";
 
 function App() {
   const [form] = Form.useForm();
@@ -25,7 +29,22 @@ function App() {
 
   // handle save data in firebase database
   const handleFormSubmit = (values) =>{
-    console.log(values);
+    const format_data = {
+      ...values,
+      recordDate: values.recordDate.format("YYYY-MM-DD")
+    };
+
+    return async (dispatch) =>{
+      try {
+        const new_animal_data = await push(ref(database, format_data));
+        dispatch(add_data_item(new_animal_data));
+        message.success("data successfully added in the database");
+
+      } catch (error) {
+        dispatch(data_fetch_error(error.message));
+        message.error("Sorry! issue occur while data saving.");
+      }
+    }
   };
   
   return (
