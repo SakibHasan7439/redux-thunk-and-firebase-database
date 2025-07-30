@@ -9,12 +9,12 @@ import {
   message,
   Select
 } from 'antd';
-import { add_data_item, data_fetch_error } from "./redux/action/action";
-import { push, ref } from "firebase/database";
-import database from "./firebase/firebase.init";
+import { start_add_animal_data} from "./redux/action/action";
+import { useDispatch } from "react-redux";
 
 function App() {
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
@@ -28,23 +28,14 @@ function App() {
 
 
   // handle save data in firebase database
-  const handleFormSubmit = (values) =>{
+  const handleFormSubmit = async(values) =>{ 
     const format_data = {
       ...values,
       recordDate: values.recordDate.format("YYYY-MM-DD")
     };
 
-    return async (dispatch) =>{
-      try {
-        const new_animal_data = await push(ref(database, format_data));
-        dispatch(add_data_item(new_animal_data));
-        message.success("data successfully added in the database");
-
-      } catch (error) {
-        dispatch(data_fetch_error(error.message));
-        message.error("Sorry! issue occur while data saving.");
-      }
-    }
+    dispatch(start_add_animal_data(format_data));
+    
   };
   
   return (
@@ -53,15 +44,15 @@ function App() {
 
       {/* form to save data in firebase database */}
         <Form
-    {...formItemLayout}
+      {...formItemLayout}
       form={form}
       onFinish={handleFormSubmit}
       style={{ maxWidth: 600 }}
   >
     <Form.Item 
         label="Animal Name: " 
-        name="animalName" r
-        ules={[{ required: true, message: 'Please input!' }]}>
+        name="animalName" 
+        rules={[{ required: true, message: 'Please input!' }]}>
       <Input />
     </Form.Item>
 
