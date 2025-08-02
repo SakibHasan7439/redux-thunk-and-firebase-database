@@ -1,22 +1,27 @@
 import CakeContainer from "./container/CakeContainer"
-// import React, { useState } from 'react';
 import {
   Button,
   DatePicker,
   Form,
   Input,
   InputNumber,
-  message,
 } from 'antd';
-
-import { fetch_animal_data, start_add_animal_data} from "./redux/action/action";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { fetch_animal_data, start_add_animal_data } from "./redux/action/action";
+import { useEffect, useState } from "react";
+import Display from "./display/display";
+
 
 function App() {
-  const { animals, loading } = useSelector(state => state);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { animals, loading, error } = useSelector(state => ({
+    animals: state.animals,
+    loading: state.loading,
+    error: state.error
+  }));
+
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
@@ -28,26 +33,47 @@ function App() {
     },
   };
 
-  // show data
-useEffect(() => {
-    dispatch(fetch_animal_data());
-}, [dispatch]);
 
+  useEffect(()=>{
+    const unsubscribeThunk = dispatch(fetch_animal_data());
 
-console.log('animals :>> ', animals);
+    return () =>{
+      if(unsubscribeThunk){
+        unsubscribeThunk.then(unsubscribe =>{
+          if(unsubscribe) unsubscribe();
+        })
+      }
+    }
+
+  }, [dispatch]);
+
+  console.log('animals :>> ', animals);
 
   // handle save data in firebase database
   const handleFormSubmit = async(values) =>{ 
-    const format_data = {
+    if(isSubmitting) return;
+
+    setIsSubmitting(true)
+    try {
+      
+      const format_data = {
       ...values,
       recordDate: values.recordDate.format("YYYY-MM-DD")
-    };
+      };
 
-    dispatch(start_add_animal_data(format_data));
+      dispatch(start_add_animal_data(format_data));
+      form.resetFields();
+
+    } catch (error) {
+      console.log("error found: ", error.message);
+    }
+    
+
     
   };
   
   return (
+    <>
     <div>
       <CakeContainer />
 
@@ -96,6 +122,12 @@ console.log('animals :>> ', animals);
     </Form.Item>
         </Form>
     </div>
+
+    <Display 
+      animals={animals}
+      loading={loading}
+    />
+    </>
   )
 }
 

@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { Form, message } from "antd";
 import { ADD_DATA_ITEM, DATA_FETCH_ERROR, DATA_FETCH_START, DATA_FETCH_SUCCESS } from "../actionTypes/actionTypes"
 import { onValue, push, ref } from "firebase/database";
 import database from "../../firebase/firebase.init";
@@ -54,7 +54,7 @@ export const fetch_animal_data = () =>{
 
         try {    
             const dbRef = ref(database, 'animal_record');
-            onValue(dbRef, snapshot =>{
+            const unsubscribe = onValue(dbRef, snapshot =>{
                 const data = snapshot.val();
                 if(data){
                     const animal_array = Object.entries(data).map(([id, value]) =>({
@@ -63,9 +63,12 @@ export const fetch_animal_data = () =>{
                     }));
                     dispatch(data_fetch_success(animal_array));
                 }
-            })
+            });
+
+        return unsubscribe;
         } catch (error) {
            dispatch(data_fetch_error(error.message));
-        }
+        };
+
     }
 }
