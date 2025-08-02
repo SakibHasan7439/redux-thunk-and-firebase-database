@@ -1,6 +1,6 @@
 import { message } from "antd";
 import { ADD_DATA_ITEM, DATA_FETCH_ERROR, DATA_FETCH_START, DATA_FETCH_SUCCESS } from "../actionTypes/actionTypes"
-import { push, ref } from "firebase/database";
+import { onValue, push, ref } from "firebase/database";
 import database from "../../firebase/firebase.init";
 
 export const add_data_item = (item) => {
@@ -45,3 +45,27 @@ export const start_add_animal_data = (format_data) =>{
       }
     }
   }
+
+
+// read data from firebase database
+export const fetch_animal_data = () =>{
+    return async(dispatch) =>{
+        dispatch(data_fetch_start());
+
+        try {    
+            const dbRef = ref(database, 'animal_record');
+            onValue(dbRef, snapshot =>{
+                const data = snapshot.val();
+                if(data){
+                    const animal_array = Object.entries(data).map(([id, value]) =>({
+                        id,
+                        ...value
+                    }));
+                    dispatch(data_fetch_success(animal_array));
+                }
+            })
+        } catch (error) {
+           dispatch(data_fetch_error(error.message));
+        }
+    }
+}

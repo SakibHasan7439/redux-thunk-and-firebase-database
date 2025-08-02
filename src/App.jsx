@@ -7,12 +7,14 @@ import {
   Input,
   InputNumber,
   message,
-  Select
 } from 'antd';
-import { start_add_animal_data} from "./redux/action/action";
-import { useDispatch } from "react-redux";
+
+import { fetch_animal_data, start_add_animal_data} from "./redux/action/action";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 function App() {
+  const { animals, loading } = useSelector(state => state);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const formItemLayout = {
@@ -26,6 +28,13 @@ function App() {
     },
   };
 
+  // show data
+useEffect(() => {
+    dispatch(fetch_animal_data());
+}, [dispatch]);
+
+
+console.log('animals :>> ', animals);
 
   // handle save data in firebase database
   const handleFormSubmit = async(values) =>{ 
