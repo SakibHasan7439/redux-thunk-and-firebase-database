@@ -2,7 +2,8 @@ import {
     ADD_DATA_ITEM, 
     DATA_FETCH_ERROR, 
     DATA_FETCH_START, 
-    DATA_FETCH_SUCCESS 
+    DATA_FETCH_SUCCESS, 
+    DELETE_DATA_ITEM
 } from "../actionTypes/actionTypes";
 
 const initial_state = {
@@ -38,6 +39,12 @@ export const reducer = (state = initial_state, action) => {
                 ...state,
                 animals: [...state.animals, action.payload]
             };
+
+        case DELETE_DATA_ITEM :
+            return {
+                ...state,
+                animals: state.animals.filter((animal) => animal.id !== action.payload)
+            }
 
         default : return state;
     }

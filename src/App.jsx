@@ -16,7 +16,7 @@ function App() {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { animals, loading, error } = useSelector(state => ({
+  const { animals, loading } = useSelector(state => ({
     animals: state.animals,
     loading: state.loading,
     error: state.error

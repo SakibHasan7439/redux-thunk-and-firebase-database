@@ -1,6 +1,6 @@
 import { Form, message } from "antd";
-import { ADD_DATA_ITEM, DATA_FETCH_ERROR, DATA_FETCH_START, DATA_FETCH_SUCCESS } from "../actionTypes/actionTypes"
-import { onValue, push, ref } from "firebase/database";
+import { ADD_DATA_ITEM, DATA_FETCH_ERROR, DATA_FETCH_START, DATA_FETCH_SUCCESS, DELETE_DATA_ITEM } from "../actionTypes/actionTypes"
+import { onValue, push, ref, remove } from "firebase/database";
 import database from "../../firebase/firebase.init";
 
 export const add_data_item = (item) => {
@@ -21,6 +21,13 @@ export const data_fetch_success = (animals) => {
     return {
         type: DATA_FETCH_SUCCESS,
         payload: animals
+    };
+}
+
+export const delete_data = (id) =>{
+    return {
+        type: DELETE_DATA_ITEM,
+        payload: id
     };
 }
 
@@ -70,5 +77,20 @@ export const fetch_animal_data = () =>{
            dispatch(data_fetch_error(error.message));
         };
 
+    }
+}
+
+// delete an item from firebase database
+export const delete_animal_data = (id) =>{
+    return async (dispatch) =>{
+        try {
+            await remove(ref(database, `animals_record/${id}`));
+            dispatch(delete_data(id));  
+            message.success('Successfully deleted data');
+
+        } catch (error) {
+            message.error("Error found! Check console please...");
+            console.log('error.message :>> ', error.message);
+        }
     }
 }
